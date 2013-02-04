@@ -1,10 +1,11 @@
+import sys
 import fcntl
 import struct
 import socket
 
 from ctypes import *
-from binascii import hexlify
 from IfreqIoctls import *
+from binascii import hexlify
 
 IFF_UP          = 0x1
 IFF_BROADCAST   = 0x2
@@ -388,16 +389,15 @@ def getIfaces():
         except:
             return ret
 
-import sys
-iff = Interface(name='eth0')
-iff.flags = iff.flags & ~IFF_UP
-
-print iff
-iff.flags = iff.flags | IFF_UP | IFF_RUNNING
-iff.addr = (socket.AF_INET, sys.argv[1])
-print iff
-iff.netmask = (socket.AF_INET, sys.argv[2])
-iff.flags = iff.flags | IFF_UP
-print iff
-iff.flags = iff.flags & ~IFF_UP
-print iff
+if __name__ == '__main__':
+    iff = Interface(name='eth0')
+    iff.flags = iff.flags & ~IFF_UP
+    print iff
+    iff.flags = iff.flags | IFF_UP | IFF_RUNNING
+    iff.addr = (socket.AF_INET, sys.argv[1])
+    print iff
+    iff.netmask = (socket.AF_INET, sys.argv[2])
+    iff.flags = iff.flags | IFF_UP
+    print iff
+    iff.flags = iff.flags & ~IFF_UP
+    print iff
