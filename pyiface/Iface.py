@@ -4,8 +4,8 @@ import struct
 import socket
 
 from ctypes import *
-from IfreqIoctls import *
 from binascii import hexlify
+from .IfreqIoctls import *
 
 IFF_UP          = 0x1
 IFF_BROADCAST   = 0x2

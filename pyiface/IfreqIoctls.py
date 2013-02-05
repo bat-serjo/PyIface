@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+#Incomplete list of most IOCTLs used to control interfaces
+
 SIOCADDRT       = 0x0000890B # ['const', 'struct', 'rtentry', '*', '//', 'MORE']
 SIOCDELRT       = 0x0000890C # ['const', 'struct', 'rtentry', '*', '//', 'MORE']
 SIOCGIFNAME     = 0x00008910 # ['char', '[]']
