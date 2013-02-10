@@ -4,43 +4,26 @@ import struct
 import socket
 
 from ctypes import *
+from .ifreqioctls import *
 from binascii import hexlify
-from .IfreqIoctls import *
-
-IFF_UP          = 0x1
-IFF_BROADCAST   = 0x2
-IFF_DEBUG       = 0x4
-IFF_LOOPBACK    = 0x8
-IFF_POINTOPOINT = 0x10
-IFF_NOTRAILERS  = 0x20
-IFF_RUNNING     = 0x40
-IFF_NOARP       = 0x80
-IFF_PROMISC     = 0x100
-IFF_ALLMULTI    = 0x200
-IFF_MASTER      = 0x400
-IFF_SLAVE       = 0x800
-IFF_MULTICAST   = 0x1000
-IFF_PORTSEL     = 0x2000
-IFF_AUTOMEDIA   = 0x4000
-IFF_DYNAMIC     = 0x8000 
 
 flags2str = {
-IFF_UP:          'Interface is up.',
-IFF_BROADCAST:   'Broadcast address valid.',
-IFF_DEBUG:       'Turn on debugging.',
-IFF_LOOPBACK:    'Is a loopback net.',
-IFF_POINTOPOINT: 'Interface is point-to-point link.',
-IFF_NOTRAILERS:  'Avoid use of trailers.',
-IFF_RUNNING:     'Resources allocated.',
-IFF_NOARP:       'No address resolution protocol.',
-IFF_PROMISC:     'Receive all packets.',
-IFF_ALLMULTI:    'Receive all multicast packets.',
-IFF_MASTER:      'Master of a load balancer.',
-IFF_SLAVE:       'Slave of a load balancer.',
-IFF_MULTICAST:   'Supports multicast.',
-IFF_PORTSEL:     'Can set media type.',
-IFF_AUTOMEDIA:   'Auto media select active.',
-IFF_DYNAMIC:     'Dialup device with changing addresses.'
+    IFF_UP:          'Interface is up.',
+    IFF_BROADCAST:   'Broadcast address valid.',
+    IFF_DEBUG:       'Turn on debugging.',
+    IFF_LOOPBACK:    'Is a loopback net.',
+    IFF_POINTOPOINT: 'Interface is point-to-point link.',
+    IFF_NOTRAILERS:  'Avoid use of trailers.',
+    IFF_RUNNING:     'Resources allocated.',
+    IFF_NOARP:       'No address resolution protocol.',
+    IFF_PROMISC:     'Receive all packets.',
+    IFF_ALLMULTI:    'Receive all multicast packets.',
+    IFF_MASTER:      'Master of a load balancer.',
+    IFF_SLAVE:       'Slave of a load balancer.',
+    IFF_MULTICAST:   'Supports multicast.',
+    IFF_PORTSEL:     'Can set media type.',
+    IFF_AUTOMEDIA:   'Auto media select active.',
+    IFF_DYNAMIC:     'Dialup device with changing addresses.'
 }
 
 def flagsToStr(fin):
@@ -162,6 +145,21 @@ class ifreq( Structure ):
 
 
 class Interface(object):
+    """
+    Represents a network interface.
+    
+    Almost all interesting attributes are exported in the form
+    of a variable. You can get or set this variable. For example:
+    
+    ifeth0 = Interface("eth0")
+    print ifeth0.addr  # will print the current address
+    ...
+    or
+    ...
+    ifeth0.addr = (AF_INET, '1.2.3.4') # will set a new address
+    
+    """
+    
     def __init__(self, idx=1, name=None):
         self.skt = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0) 
         fcntl.fcntl(self.skt, 
@@ -378,6 +376,10 @@ class Interface(object):
         return x
 
 def getIfaces():
+    """
+    Returns a list of all available interfaces.
+    """
+    
     ret = []
     i = 1
     
@@ -390,6 +392,12 @@ def getIfaces():
             return ret
 
 if __name__ == '__main__':
+    print 'All your interfaces'
+    allIfaces = getIfaces()
+    for iface in allIfaces:
+        print iface
+    
+    
     iff = Interface(name='eth0')
     iff.flags = iff.flags & ~IFF_UP
     print iff
@@ -401,3 +409,4 @@ if __name__ == '__main__':
     print iff
     iff.flags = iff.flags & ~IFF_UP
     print iff
+    
