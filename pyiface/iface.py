@@ -178,7 +178,7 @@ class Interface(object):
 
     def __newIfreqWithName(self):
         ifr = ifreq()
-        ifr.ifr_name = self._name
+        ifr.ifr_name = (c_ubyte*IFNAMSIZ) (*bytearray(self._name))
         return ifr
 
     def __doIoctl(self, ifr, SIOC, mutate = True):
