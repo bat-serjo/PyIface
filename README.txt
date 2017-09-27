@@ -35,5 +35,5 @@ Install:
 	To install the package simply call setup.py with the install option.
 
 Links:    
-	For more information goto my `blogspot <http://python-a-day.blogspot.com/>`_.
-	Or browse the `github <https://github.com/bat-serjo/PyIface>`_ repository.
+	For more information goto my `blogspot  http://python-a-day.blogspot.com  `  
+	Or browse the `github  https://github.com/bat-serjo/PyIface `  repository.
