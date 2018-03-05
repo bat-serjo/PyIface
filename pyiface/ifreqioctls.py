@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # Complete list of ifreq flags for linux as of2013
 
 IFF_UP          = 0x1
