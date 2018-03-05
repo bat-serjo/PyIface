@@ -1,10 +1,11 @@
+from __future__ import absolute_import
 import sys
 import fcntl
 import struct
 import socket
 
 from ctypes import *
-from .ifreqioctls import *
+from ifreqioctls import *
 from binascii import hexlify
 
 flags2str = {
@@ -173,7 +174,7 @@ class Interface(object):
         if (self._name == None):
             self._name = self.name
         else:
-            self._name = (c_ubyte*IFNAMSIZ) (*bytearray(self._name))
+            self._name = (c_ubyte*IFNAMSIZ) (*bytearray(self._name.encode('utf8')))
             self._index = self.index
 
     def __newIfreqWithName(self):
@@ -392,21 +393,21 @@ def getIfaces():
             return ret
 
 if __name__ == '__main__':
-    print 'All your interfaces'
+    print('All your interfaces')
     allIfaces = getIfaces()
     for iface in allIfaces:
-        print iface
+        print(iface)
     
     
     iff = Interface(name='eth0')
     iff.flags = iff.flags & ~IFF_UP
-    print iff
+    print(iff)
     iff.flags = iff.flags | IFF_UP | IFF_RUNNING
     iff.addr = (socket.AF_INET, sys.argv[1])
-    print iff
+    print(iff)
     iff.netmask = (socket.AF_INET, sys.argv[2])
     iff.flags = iff.flags | IFF_UP
-    print iff
+    print(iff)
     iff.flags = iff.flags & ~IFF_UP
-    print iff
+    print(iff)
     
