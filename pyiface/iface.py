@@ -5,7 +5,7 @@ import struct
 import socket
 
 from ctypes import *
-from ifreqioctls import *
+from .ifreqioctls import *
 from binascii import hexlify
 
 flags2str = {
