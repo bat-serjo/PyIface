@@ -351,7 +351,7 @@ class Interface(object):
         
         raise "Input must be tuple like (AF_INET, '127.0.0.1')"
         
-    def __sockaddrToStr(self, sockaddr):
+    def sockaddrToStr(self, sockaddr):
         if sockaddr.gen.sa_family  == 0:
             return 'None'
         
@@ -366,9 +366,9 @@ class Interface(object):
                                                  self.hwaddr )
         
         x = x + 'Addr:%s Bcast:%s Mask:%s\n' % (
-                                  self.__sockaddrToStr(self.addr), 
-                                  self.__sockaddrToStr(self.broadaddr), 
-                                  self.__sockaddrToStr(self.netmask) )
+                                  self.sockaddrToStr(self.addr), 
+                                  self.sockaddrToStr(self.broadaddr), 
+                                  self.sockaddrToStr(self.netmask) )
         x = x + 'MTU: %d Metric: %d Txqueuelen: %d\n' % (
                                                  self.mtu, 
                                                  self.metric + 1,
