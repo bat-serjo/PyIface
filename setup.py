@@ -11,6 +11,6 @@ setup(
     python_requires='>=2',
     license='LICENSE.txt',
     description='View and control network interfaces. Linux only currently! Join us lets make it available for other OSes',
-    long_description=open('README.txt').read(),
+    long_description=open('README.rst').read(),
     install_requires=[],
 )
