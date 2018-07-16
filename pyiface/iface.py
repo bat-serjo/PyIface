@@ -175,11 +175,6 @@ class Interface(object):
     """
 
     def __init__(self, idx=1, name=None):
-        self.skt = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
-        fcntl.fcntl(self.skt,
-                    fcntl.F_SETFD,
-                    fcntl.fcntl(self.skt, fcntl.F_GETFD) | fcntl.FD_CLOEXEC)
-
         self._index = idx
         self._name = name
 
@@ -197,7 +192,11 @@ class Interface(object):
 
     def __doIoctl(self, ifr, SIOC, mutate=True):
         try:
-            fcntl.ioctl(self.skt, SIOC, ifr, mutate)
+            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0) as skt:
+                fcntl.fcntl(skt,
+                            fcntl.F_SETFD,
+                            fcntl.fcntl(skt, fcntl.F_GETFD) | fcntl.FD_CLOEXEC)
+                fcntl.ioctl(skt, SIOC, ifr, mutate)
         except IOError as ioException:
             if ioException.errno == 99:
                 pass
