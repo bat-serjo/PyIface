@@ -5,7 +5,7 @@ General information
 -------------------
 
 Pyiface is a package that exposes the network interfaces of the operating
-system in a easy to use and transparent way Typical usage looks like this:
+system in an easy to use and transparent way. Typical usage looks like this:
 
 .. code-block:: python
 
