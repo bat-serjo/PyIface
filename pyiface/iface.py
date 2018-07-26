@@ -192,16 +192,19 @@ class Interface(object):
 
     def __doIoctl(self, ifr, SIOC, mutate=True):
         try:
-            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0) as skt:
-                fcntl.fcntl(skt,
-                            fcntl.F_SETFD,
-                            fcntl.fcntl(skt, fcntl.F_GETFD) | fcntl.FD_CLOEXEC)
-                fcntl.ioctl(skt, SIOC, ifr, mutate)
+            skt = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
+            fcntl.fcntl(skt,
+                        fcntl.F_SETFD,
+                        fcntl.fcntl(skt, fcntl.F_GETFD) | fcntl.FD_CLOEXEC)
+            fcntl.ioctl(skt, SIOC, ifr, mutate)
         except IOError as ioException:
             if ioException.errno == 99:
                 pass
             else:
                 raise ioException
+        finally:
+            if skt:
+                skt.close()
 
     def __getSimple(self, ioctl, elem):
         ifr = self.__newIfreqWithName()

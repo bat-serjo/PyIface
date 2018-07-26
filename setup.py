@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name='pyiface',
-    version='0.0.6',
+    version='0.0.9',
     author='Sergey Kostov',
     author_email='bat.serjo@gmail.com',
     packages=['pyiface'],
