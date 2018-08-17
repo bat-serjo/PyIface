@@ -158,6 +158,15 @@ class ifreq(Structure):
     ]
 
 
+class in6_ifreq(Structure):
+    _pack_ = 1
+    _fields_ = [
+        ('addr', in6_addr),
+        ('prefixlen', c_uint32),
+        ('ifindex', c_int)
+    ]
+
+
 class Interface(object):
     """
     Represents a network interface.
@@ -175,6 +184,8 @@ class Interface(object):
     """
 
     def __init__(self, idx=1, name=None):
+        self._af_mode = socket.AF_INET
+
         self._index = idx
         self._name = name
 
@@ -192,13 +203,13 @@ class Interface(object):
 
     def __doIoctl(self, ifr, SIOC, mutate=True):
         try:
-            skt = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
+            skt = socket.socket(self._af_mode, socket.SOCK_DGRAM, 0)
             fcntl.fcntl(skt,
                         fcntl.F_SETFD,
                         fcntl.fcntl(skt, fcntl.F_GETFD) | fcntl.FD_CLOEXEC)
             fcntl.ioctl(skt, SIOC, ifr, mutate)
         except IOError as ioException:
-            if ioException.errno == 99:
+            if ioException.errno == 99 or ioException.errno == 17:
                 pass
             else:
                 raise ioException
@@ -312,7 +323,17 @@ class Interface(object):
     def addr(self, val):
         ifr = self.__newIfreqWithName()
         ifr.data.ifr_addr = self.__sockaddrFromTuple(val)
-        self.__doIoctl(ifr, SIOCSIFADDR, False)
+
+        if self._af_mode == socket.AF_INET6:
+            ifr6 = in6_ifreq()
+            ifr6.ifindex = self.index
+            ifr6.prefixlen = 64
+            ifr6.addr = ifr.data.ifr_addr.in6.sin6_addr
+            self.__doIoctl(ifr6, SIOCSIFADDR, False)
+        else:
+            self.__doIoctl(ifr, SIOCSIFADDR, False)
+
+        self._af_mode = socket.AF_INET
 
     @property
     def broadaddr(self):
@@ -346,9 +367,9 @@ class Interface(object):
             return sockaddr.in6.sin6_addr.in6_u
         return 0
 
-    @staticmethod
-    def __sockaddrFromTuple(inVal):
+    def __sockaddrFromTuple(self, inVal):
         if inVal[0] == socket.AF_INET:
+            self._af_mode = socket.AF_INET
             sin4 = sockaddr()
 
             sin4.in4.sin_family = inVal[0]
@@ -358,11 +379,13 @@ class Interface(object):
             return sin4
 
         elif inVal[0] == socket.AF_INET6:
+            self._af_mode = socket.AF_INET6
+
             sin6 = sockaddr()
             sin6.in6.sin6_family = inVal[0]
-            sin6.in6.sin6_addr.in6_u = hexlify(socket.inet_pton(
+            sin6.in6.sin6_addr.in6_u = in6_u((c_ubyte*16)(*bytearray(socket.inet_pton(
                 inVal[0],
-                inVal[1]))
+                inVal[1]))))
             return sin6
 
         raise Exception("Input must be tuple like (AF_INET, '127.0.0.1')")
@@ -421,6 +444,9 @@ if __name__ == '__main__':
     iff.addr = (socket.AF_INET, sys.argv[1])
     print(iff)
     iff.netmask = (socket.AF_INET, sys.argv[2])
+    print(iff)
+    iff.addr = (socket.AF_INET6, '2001::0')
+    print(iff)
     iff.flags = iff.flags | IFF_UP
     print(iff)
     iff.flags = iff.flags & ~IFF_UP
