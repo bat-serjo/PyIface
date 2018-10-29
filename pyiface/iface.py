@@ -253,7 +253,7 @@ class Interface(object):
         ifr.data.ifr_ifindex = self._index
         self.__doIoctl(ifr, SIOCGIFNAME)
         self._name = ifr.ifr_name
-        return string_at(self._name)
+        return string_at(self._name).decode('utf8', 'backslashreplace')
 
     @name.setter
     def name(self, val):
